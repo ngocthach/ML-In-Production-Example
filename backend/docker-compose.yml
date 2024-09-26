@@ -1,0 +1,93 @@
+version: '3.8'
+
+networks:
+  internal_tool:
+    name: internal_tool
+    external: true
+
+services:
+  scraper-web:
+    build: .
+    hostname: scraper-web
+    container_name: scraper-web
+    command: python manage.py runserver 0.0.0.0:8088
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/src/app/
+    ports:
+      - 8088:8088
+    networks:
+      - internal_tool
+
+  scraper-worker:
+    build: .
+    hostname: scraper-worker
+    container_name: scraper-worker
+    command: celery --app=scraper worker --loglevel=info --logfile=/var/logs/celery.log --autoscale=64,2 --concurrency=64
+    restart: always
+    depends_on:
+      - scraper-web
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/src/app
+      - worker_volume:/var/logs/
+    networks:
+      - internal_tool
+
+  scraper-beat:
+    build: .
+    hostname: scraper-beat
+    container_name: scraper-beat
+    command: celery --app=scraper beat --loglevel=info --logfile=/var/logs/beat.log
+    restart: always
+    depends_on:
+      - scraper-web
+    env_file:
+      - .env
+    environment:
+      - DEBUG=True # False for production
+    volumes:
+      - .:/usr/src/app
+      - worker_volume:/var/logs/
+    networks:
+      - internal_tool
+
+  scraper-flower:
+    build: .
+    hostname: scraper-flower
+    container_name: scraper-flower
+    command: celery --app=scraper flower --loglevel=info --logfile=/var/logs/flower.log --basic_auth=admin:${CELERY_FLOWER_PASSWORD}
+    restart: always
+    depends_on:
+      - scraper-web
+    env_file:
+      - .env
+    environment:
+      - DEBUG=False
+    volumes:
+      - .:/usr/src/app
+      - worker_volume:/var/logs/
+    ports:
+      - 5555:5555
+    networks:
+      - internal_tool
+
+  redis-db:
+    image: redis
+    container_name: redis-db
+    restart: always
+    ports:
+      - 6379:6379
+    volumes:
+      - redis_data:/data
+    entrypoint: redis-server --appendonly yes
+    networks:
+      - internal_tool
+
+
+volumes:
+  worker_volume:
+  redis_data:
