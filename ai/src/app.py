@@ -1,4 +1,5 @@
 import logging
+import time
 
 from fastapi import FastAPI, Body
 from fastapi.responses import JSONResponse
@@ -31,11 +32,13 @@ async def root():
 
 @app.post("/v1/detect")
 async def detect(input_data: dict):
+    t0 = time.time()
     text = input_data.get("text")
     if text:
         try:
-            results = predict(text)
-            return {"results": results}
+            result = predict(text)[0]
+            result['runtime'] = int((time.time() - t0) * 1000)
+            return result
         except Exception as e:
             return JSONResponse(status_code=500, content={"message": f"Error predict {text}: {str(e)}"})
     else:

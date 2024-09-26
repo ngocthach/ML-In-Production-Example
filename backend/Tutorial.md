@@ -218,6 +218,26 @@
                 return JsonResponse(result, status=200)
 
 
+## Update utils.py call ML model
+    def detect_sentiment(text):
+        payload = json.dumps({ "text": text})
+        headers = {'Content-Type': 'application/json'}
+        response = requests.request("POST", ml_host, headers=headers, data=payload)
+        return response.text
+
+## Update tasks.py call ML model
+    @shared_task
+    def crawl_news_task(url):
+        html = crawl_website(url)
+        title = extract_title(html)
+        logger.info(f"Collected {title}")
+    
+        sentiment = detect_sentiment(title)
+        logger.info(f"Detect {sentiment}")
+    
+        return {"title": title, "sentiment": sentiment}
+
+
 ## Run server
     cd backend
     docker compose up -d --build

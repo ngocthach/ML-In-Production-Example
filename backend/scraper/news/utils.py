@@ -3,6 +3,7 @@ import logging
 import requests
 from bs4 import BeautifulSoup
 
+ml_host = "http://ml-serving:8000/v1/detect"
 
 def extract_post_request(request):
     try:
@@ -35,6 +36,13 @@ def create_logger(name, level=logging.DEBUG):
     logger.setLevel(level)
     logger.addHandler(logging.StreamHandler())
     return logger
+
+
+def detect_sentiment(text):
+    payload = json.dumps({ "text": text})
+    headers = {'Content-Type': 'application/json'}
+    response = requests.request("POST", ml_host, headers=headers, data=payload)
+    return json.loads(response.text)
 
 
 if __name__ == '__main__':
