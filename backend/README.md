@@ -12,7 +12,9 @@
 ## Start app
     python manage.py startapp news
 
-## 
+## Code tutorial
+    
+[Read here](Tutorial.md)
 
 ## Install Mysql Client
     Mac:
