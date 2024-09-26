@@ -62,3 +62,18 @@
     STATIC_ROOT = os.path.join(BASE_DIR, 'statics')
     STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
+
+## Config Celery
+    
+    import os
+    from celery import Celery
+    
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "scraper.settings")
+    app = Celery("scraper")
+    
+    app.config_from_object("django.conf:settings", namespace="CELERY")
+    
+    # Load task modules from all registered Django app configs.
+    app.autodiscover_tasks()
+    
+    app.conf.update(result_extended=True,)
