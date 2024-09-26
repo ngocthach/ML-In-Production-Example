@@ -1,0 +1,10 @@
+annotated-types==0.7.0
+anyio==4.6.0
+click==8.1.7
+exceptiongroup==1.2.2
+fastapi==0.115.0
+transformers
+python-multipart==0.0.10
+starlette==0.38.6
+typing_extensions==4.12.2
+uvicorn==0.30.6

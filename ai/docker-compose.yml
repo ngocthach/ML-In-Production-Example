@@ -1,0 +1,19 @@
+version: "3.8"
+
+networks:
+  internal_tool:
+    name: internal_tool
+    external: true
+
+services:
+  ml-serving:
+    build: .
+    hostname: ml-serving
+    container_name: ml-serving
+    restart: always
+    ports:
+      - "8085:8000"
+    networks:
+      - internal_tool
+    volumes:
+      - ./config:/config
