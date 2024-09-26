@@ -1,9 +1,7 @@
-import logging
-
 from celery import shared_task
-from .utils import crawl_website, extract_title
+from .utils import crawl_website, extract_title, create_logger
 
-logger = logging.getLogger(__name__)
+logger = create_logger(__name__)
 
 @shared_task
 def crawl_news_task(url):

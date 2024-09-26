@@ -9,15 +9,16 @@ RUN apt update -y \
     && apt-get clean
 
 # set work directory
-WORKDIR /usr/src/app
+WORKDIR /usr/src/app/scraper
 
 # set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+ENV PYTHONPATH=$PYTHONPATH:/usr/src/app/
 
 # install dependencies
 RUN pip install --upgrade pip
-COPY ./requirements.txt /usr/src/app/requirements.txt
+COPY ./requirements.txt /usr/src/app/scraper/requirements.txt
 RUN pip install -r requirements.txt
 
 # copy entrypoint.sh

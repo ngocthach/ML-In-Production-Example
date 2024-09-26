@@ -29,6 +29,14 @@ def extract_title(html):
     return title
 
 
+def create_logger(name, level=logging.DEBUG):
+    logging.basicConfig(format="%(asctime)s %(levelname)s: %(message)s")
+    logger = logging.getLogger(name)
+    logger.setLevel(level)
+    logger.addHandler(logging.StreamHandler())
+    return logger
+
+
 if __name__ == '__main__':
     result = crawl_website("https://vnexpress.net/chuyen-gia-sinh-vien-it-nen-lam-viec-truoc-hoc-thac-si-4790805.html")
     print(extract_title(result))

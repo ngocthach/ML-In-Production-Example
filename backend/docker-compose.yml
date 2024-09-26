@@ -59,7 +59,7 @@ services:
     build: .
     hostname: scraper-flower
     container_name: scraper-flower
-    command: celery --app=scraper flower --loglevel=info --logfile=/var/logs/flower.log --basic_auth=admin:${CELERY_FLOWER_PASSWORD}
+    command: celery --app=scraper flower --loglevel=info --logfile=/var/logs/flower.log
     restart: always
     depends_on:
       - scraper-web

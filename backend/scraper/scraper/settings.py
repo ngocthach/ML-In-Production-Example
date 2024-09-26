@@ -109,6 +109,12 @@ DATABASES = {
 
 # Broker_connection_retry_on_startup
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+CELERY_RESULT_BACKEND = "django-db"
+
+# Define the content types for serialization
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
 
 # This configures Redis as the datastore between Django + Celery
 CELERY_BROKER_URL = config("CELERY_BROKER_REDIS_URL", default="redis://0.0.0.0:6379")
@@ -153,9 +159,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Ho_Chi_Minh'
 
 USE_I18N = True
+
+USE_L10N = True
 
 USE_TZ = True
 
@@ -165,7 +173,6 @@ USE_TZ = True
 
 STATIC_URL = '/statics/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'statics')
-STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")

@@ -39,6 +39,12 @@
 
     # Broker_connection_retry_on_startup
     CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+    CELERY_RESULT_BACKEND = "django-db"
+    
+    # Define the content types for serialization
+    CELERY_ACCEPT_CONTENT = ['json']
+    CELERY_TASK_SERIALIZER = 'json'
+    CELERY_RESULT_SERIALIZER = 'json'
     
     # This configures Redis as the datastore between Django + Celery
     CELERY_BROKER_URL = config("CELERY_BROKER_REDIS_URL", default="redis://0.0.0.0:6379")
@@ -60,7 +66,6 @@
     # Static file
     STATIC_URL = '/statics/'
     STATIC_ROOT = os.path.join(BASE_DIR, 'statics')
-    STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
 
 ## Config Celery
@@ -77,6 +82,15 @@
     app.autodiscover_tasks()
     
     app.conf.update(result_extended=True,)
+
+
+## Edit __init__.py
+    from .celery import app as celery_app
+    import pymysql
+    
+    pymysql.install_as_MySQLdb()
+    
+    __all__ = ("celery_app",)
 
 
 ## Add url to scraper/urls.py
@@ -125,6 +139,13 @@
 
     return title
 
+    def create_logger(name, level=logging.DEBUG):
+        logging.basicConfig(format="%(asctime)s %(levelname)s: %(message)s")
+        logger = logging.getLogger(name)
+        logger.setLevel(level)
+        logger.addHandler(logging.StreamHandler())
+        return logger
+
 
 ## Add tasks.py
     import logging
@@ -138,5 +159,66 @@
     def crawl_news_task(url):
         html = crawl_website(url)
         title = extract_title(html)
+        logger.info(f"Collected {title}")
     return {"title": title}
+
+
+## Add news/__init__.py
+    default_app_config = 'new.apps.NewsConfig'
+
+
+## Add news/views.py
+
+    import time
+
+    from celery.result import AsyncResult
+    from django.http import JsonResponse
+    from django.views.decorators.csrf import csrf_exempt
+    from django.views.decorators.http import require_POST
+    
+    from .tasks import crawl_news_task
+    from .utils import extract_post_request, create_logger
+    
+    logger = create_logger(__name__)
+    
+    @require_POST
+    @csrf_exempt
+    def crawl_news(request):
+        json_data = extract_post_request(request)
+        url = json_data.get("url")
+    
+        task = crawl_news_task.delay(url)
+        return JsonResponse({"task_id": task.id}, status=200)
+
+
+    @csrf_exempt
+    def get_crawl_result(request, task_id):
+        start_time = time.time()
+        while True:
+            task_result = AsyncResult(task_id)
+            task_status = task_result.status
+            logger.info(f"Task result: {task_result.result}")
+    
+            if task_status == 'PENDING':
+                if time.time() - start_time > 60:  # 60 seconds timeout
+                    return {
+                        "task_id": task_id,
+                        "task_status": task_result.status,
+                        "task_result": task_result.result,
+                        "error_message": "Service timeout, retry please"
+                    }
+                else:
+                    time.sleep(0.5)  # sleep for 0.5 seconds before retrying
+            else:
+                result = {
+                    "task_id": task_id,
+                    "task_status": task_result.status,
+                    "task_result": task_result.result
+                }
+                return JsonResponse(result, status=200)
+
+
+## Run server
+    cd backend
+    docker compose up -d --build
 
