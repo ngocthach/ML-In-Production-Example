@@ -1,0 +1,26 @@
+version: '3.8'
+
+networks:
+  internal_tool:
+    name: internal_tool
+    external: true
+
+services:
+  mariadb-db:
+    image: mariadb:11.5.1-ubi9-rc
+    container_name: mariadb-db
+    restart: always
+    env_file:
+      - .env
+    environment:
+      MYSQL_USER: user1
+    volumes:
+      - sql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3306:3306"
+    networks:
+      - internal_tool
+
+volumes:
+  sql_data:

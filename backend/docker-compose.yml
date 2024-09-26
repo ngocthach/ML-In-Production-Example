@@ -25,7 +25,7 @@ services:
     build: .
     hostname: scraper-worker
     container_name: scraper-worker
-    command: celery --app=scraper worker --loglevel=info --logfile=/var/logs/celery.log --autoscale=64,2 --concurrency=64
+    command: celery --app=scraper worker --loglevel=info --logfile=/var/logs/celery.log
     restart: always
     depends_on:
       - scraper-web

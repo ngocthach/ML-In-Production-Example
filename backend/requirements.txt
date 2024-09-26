@@ -1,5 +1,6 @@
 celery==5.4.0
 redis==5.0.7
+requests~=2.32.3
 aiohttp==3.10.5
 asyncio==3.4.3
 pymysql==1.1.1
@@ -15,7 +16,6 @@ python-decouple==3.8
 selenium==4.24.0
 beautifulsoup4==4.12.3
 flower==2.0.1
-drf_yasg==1.21.7
 django-filter==24.3
 Django==5.0.6
 djangorestframework==3.15.2

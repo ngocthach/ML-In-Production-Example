@@ -93,7 +93,7 @@ db_host = os.environ.get("MYSQL_HOST", "0.0.0.0")
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'scraper',
+        'NAME': 'scrape',
         'USER': 'root',
         'PASSWORD': db_password,
         'HOST': db_host,
