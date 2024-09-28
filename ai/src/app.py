@@ -4,6 +4,7 @@ import time
 from fastapi import FastAPI, Body
 from fastapi.responses import JSONResponse
 
+from utils import crawl_website, extract_title
 from model import predict
 
 
@@ -33,10 +34,14 @@ async def root():
 @app.post("/v1/detect")
 async def detect(input_data: dict):
     t0 = time.time()
-    text = input_data.get("text")
+    link = input_data.get("link", None)
+    text = input_data.get("text", None)
+    if link:
+        text = extract_title(crawl_website(link))
     if text:
         try:
             result = predict(text)[0]
+            result['text'] = text
             result['runtime'] = int((time.time() - t0) * 1000)
             return result
         except Exception as e:

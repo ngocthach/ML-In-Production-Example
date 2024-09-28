@@ -4,6 +4,8 @@ click==8.1.7
 exceptiongroup==1.2.2
 fastapi==0.115.0
 transformers
+requests~=2.32.3
+beautifulsoup4==4.12.3
 python-multipart==0.0.10
 starlette==0.38.6
 typing_extensions==4.12.2
