@@ -26,28 +26,6 @@ logger = logging.getLogger("sentiment")
 logging.basicConfig(level=logging.INFO)
 
 
-@app.get("/v1/test")
-async def root():
-    return {"message": "Hello World"}
-
-
-@app.post("/v1/detect")
-async def detect(input_data: dict):
-    t0 = time.time()
-    link = input_data.get("link", None)
-    text = input_data.get("text", None)
-    if link:
-        text = extract_title(crawl_website(link))
-    if text:
-        try:
-            result = predict(text)[0]
-            result['text'] = text
-            result['runtime'] = int((time.time() - t0) * 1000)
-            return result
-        except Exception as e:
-            return JSONResponse(status_code=500, content={"message": f"Error predict {text}: {str(e)}"})
-    else:
-        return JSONResponse(status_code=400, content={"message": "Input is empty"})
 
 
 if __name__ == "__main__":
