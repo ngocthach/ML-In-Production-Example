@@ -1,0 +1,4 @@
+MYSQL_ROOT_PASSWORD='root_sql_password'
+MYSQL_HOST='mariadb-db'
+REDIS_HOST='redis-db'
+CELERY_BROKER_REDIS_URL='redis://redis-db:6379/0'

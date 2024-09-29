@@ -1,2 +1,2 @@
-MYSQL_ROOT_PASSWORD=
-MYSQL_PASSWORD=
+MYSQL_ROOT_PASSWORD='root_sql_password'
+MYSQL_PASSWORD='chat_password'

@@ -20,6 +20,7 @@
 
 ## Install MariaDB
     cd mariadb
+    create file .env from env
     docker compose up -d --build
 
 ## Code tutorial
@@ -27,6 +28,7 @@
 [Read here](Tutorial.md)
 
 ## Deploy
+    create file .env from env
     docker compose up -d --build
     docker compose down
 
