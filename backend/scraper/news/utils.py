@@ -19,7 +19,7 @@ def crawl_website(url):
     return response.content
 
 
-def extract_title(html):
+def extract_content(html):
     soup = BeautifulSoup(html, "html.parser")
 
     try:
@@ -27,7 +27,16 @@ def extract_title(html):
     except AttributeError:
         title = 'N/A'
 
-    return title
+    try:
+        # Extract article text
+        article_text = soup.find('article', class_='fck_detail')
+        # Extract paragraphs
+        paragraphs = article_text.find_all('p', class_='Normal')
+        content = '\n'.join([para.get_text() for para in paragraphs])
+    except AttributeError:
+        content = 'N/A'
+
+    return title, content
 
 
 def create_logger(name, level=logging.DEBUG):
@@ -47,4 +56,4 @@ def detect_sentiment(text):
 
 if __name__ == '__main__':
     result = crawl_website("https://vnexpress.net/chuyen-gia-sinh-vien-it-nen-lam-viec-truoc-hoc-thac-si-4790805.html")
-    print(extract_title(result))
+    print(extract_content(result))
